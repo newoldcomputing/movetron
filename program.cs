@@ -7,10 +7,10 @@ namespace Movetron
 	//Анимированный объект
 	class TAnimated
 	{	
-		public int x, y;			   //0..77, 0..31
-		public int dx, dy;	   		   //-1, 0 ,1
-		public char RepreChar;		   //Символ, которым отображается	
-		public bool Visible;           //Видимость игроком
+		public int x, y;	//0..77, 0..31
+		public int dx, dy;	//-1, 0 ,1
+		public char RepreChar;	//Символ, которым отображается	
+		public bool Visible;	//Видимость игроком
 		public byte Color;
 	
 		//Задает координаты
@@ -41,6 +41,7 @@ namespace Movetron
 			
 			this.x = this.x + this.dx;
 			this.y = this.y + this.dy;
+			
 			return true;
 		}
 			
@@ -117,8 +118,8 @@ namespace Movetron
 	class MovetronGame
 	{			
 		//Сообщения
-	 	public const byte MSG_DEAD = 0;
-	 	public const byte MSG_WELCOME = 1;
+		public const byte MSG_DEAD = 0;
+		public const byte MSG_WELCOME = 1;
 		public const byte MSG_GEMFOUND = 2;
 		public const byte MSG_COMPLETE = 3;
 		public const byte MSG_PAUSE = 17;
@@ -169,112 +170,106 @@ namespace Movetron
 					    
 					    
 				}
-			
+
 			return Buffer;
 		}
 		//#################################################################################################
 		static void Main()
-    	{   	
-    		InitBox.InitScreen();  	//Инициализируем экран.
-    		InitBox.LegalStuff(); 	//Юридическая фигня.    				 		    		
-    		InitBox.LangSelect(); 	//Выбор языка.
+		{   	
+			InitBox.InitScreen();	//Инициализируем экран.
+			InitBox.LegalStuff()	;//Юридическая фигня.    				 		    		
+			InitBox.LangSelect()	;//Выбор языка.
 			
-    		GameMenu.Run();
-        	Console.Clear();
+			GameMenu.Run();
+			Console.Clear();
         	
-        	//Загрузка карты
-        	Geo.LoadMap(Geo.Map,LevelNumber);
-        	MapParsedData = ParseMap(Geo.Map);
+			//Загрузка карты
+			Geo.LoadMap(Geo.Map,LevelNumber);
+			MapParsedData = ParseMap(Geo.Map);
         	
-        	//Сколько камушков на карте
-        	GemsLeft = MapParsedData.GemsLeft;
+			//Сколько камушков на карте
+			GemsLeft = MapParsedData.GemsLeft;
+			//Создание героя
+			THero Hero = new THero(MapParsedData.HeroStartX,MapParsedData.HeroStartY);
+			Hero.Draw(true);
+			GamePanel.Draw();
+			GamePanel.ShowMazeNumber(LevelNumber);
+			GamePanel.ShowGems(GemsLeft);
+			GamePanel.ShowBombs(Hero.Bombs);
+			GamePanel.ShowAmmo(Hero.Ammo);
+			GamePanel.ShowLives(Hero.Lives,false);
+			Geo.ShowMap(Geo.Map,true);
         	
-        	//Создание героя
-        	THero Hero = new THero(MapParsedData.HeroStartX,MapParsedData.HeroStartY);
-        	Hero.Draw(true);
-        	
-        	GamePanel.Draw();
-        	GamePanel.ShowMazeNumber(LevelNumber);
-        	GamePanel.ShowGems(GemsLeft);
-        	GamePanel.ShowBombs(Hero.Bombs);
-        	GamePanel.ShowAmmo(Hero.Ammo);
-        	GamePanel.ShowLives(Hero.Lives,false);
-        	
-        	Geo.ShowMap(Geo.Map,true);
-        	
-        	
-    		//ГЛАВНЫЙ ЦИКЛ
-    		do
-    		{	
-    			//Если нажата клавиша
-    			if (Console.KeyAvailable == true)
-    			{
-    				//Смотрим, что за символ
-    				CRT.KeyPressed = Console.ReadKey(true);   				
-    				switch (CRT.KeyPressed.Key)
-    				{
-    					case ConsoleKey.LeftArrow:
-    					{
-    						Hero.SetDXDY(-1,0);
-    						break;
-    					}
-    					case ConsoleKey.RightArrow:
-    					{
-    						Hero.SetDXDY(1,0);
-    						break;
-    					}
-    					case ConsoleKey.UpArrow:
-    					{
-    						Hero.SetDXDY(0,-1);
-    						break;
-    					}
-    					case ConsoleKey.DownArrow:
-    					{
-    						Hero.SetDXDY(0,1);
-    						break;
-    					} 
-    					case ConsoleKey.Escape:
-    					{
-    						if (GamePanel.Quit() == true)
-    						{
-    							Console.Clear();
-    							System.Environment.Exit(0);
+        		//ГЛАВНЫЙ ЦИКЛ
+			do
+			{	
+				//Если нажата клавиша
+				if (Console.KeyAvailable == true)
+				{
+					//Смотрим, что за символ
+					CRT.KeyPressed = Console.ReadKey(true);   				
+					switch (CRT.KeyPressed.Key)
+					{
+						case ConsoleKey.LeftArrow:
+						{
+							Hero.SetDXDY(-1,0);
+							break;
+						}
+						case ConsoleKey.RightArrow:
+						{
+							Hero.SetDXDY(1,0);
+							break;
+						}
+						case ConsoleKey.UpArrow:
+						{
+							Hero.SetDXDY(0,-1);
+							break;
+						}
+						case ConsoleKey.DownArrow:
+						{
+							Hero.SetDXDY(0,1);
+							break;
+						} 
+						case ConsoleKey.Escape:
+						{
+							if (GamePanel.Quit() == true)
+							{
+								Console.Clear();
+								System.Environment.Exit(0);
 							}							
 							break;							
-    				 	}
-    					case ConsoleKey.F1:
-    					{
-    						GamePanel.Pause();
-    						break;
-    					}
+						}
+						case ConsoleKey.F1:
+						{
+							GamePanel.Pause();
+							break;
+						}
+					}
+					CRT.FlushKeyboardBuffer();		//чтобы не забивать нажатиями
+				} //Закончили опрос клавиатуры. Через порты было круче.
+
+				//Смещение игрока
+				Hero.Draw(false);
+				Hero.UpdateXY();
+				Hero.SetDXDY(0,0);
+				Hero.Draw(true);
+
+				//Нашли камушек?
+				if (Geo.Map[Hero.x,Hero.y] == Geo.C_GEM)
+				{
+					Geo.Map[Hero.x,Hero.y] = Geo.C_EMPTY;
+					GemsLeft--;
+					GamePanel.SendMsg(MSG_GEMFOUND);
+					GamePanel.ShowGems(GemsLeft);
+				}
     			
-    				}
-    				CRT.FlushKeyboardBuffer();		//чтобы не забивать нажатиями
-    			} //Закончили опрос клавиатуры. Через порты было круче.
-    					    					   			
-    			    			   			
-    			//Смещение игрока
-    			Hero.Draw(false);
-    			Hero.UpdateXY();
-    			Hero.SetDXDY(0,0);
-    			Hero.Draw(true);
+				//Простой таймер
+				if (time < 64000) time++;
+				else time = 0;
     			
-    			//Нашли камушек?
-    			if (Geo.Map[Hero.x,Hero.y] == Geo.C_GEM)
-    			{
-    				Geo.Map[Hero.x,Hero.y] = Geo.C_EMPTY;
-    				GemsLeft--;
-    				GamePanel.SendMsg(MSG_GEMFOUND);
-    				GamePanel.ShowGems(GemsLeft);
-    			}
-    			
-    			//Простой таймер
-    			if (time < 64000) time++;
-    			else time = 0;
-    			
-    			Thread.Sleep(200); 		//одинаковая скорость на всех компах
+				Thread.Sleep(200);		//одинаковая скорость на всех компах
     		  
-    		} while(true); //главного цикла  		
-		}
-	}
-}
+			} while(true); //главного цикла  		
+		} // of Main()
+	} //of MovetronGame
+} //of namespace
