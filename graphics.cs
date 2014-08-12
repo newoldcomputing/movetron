@@ -14,9 +14,9 @@ namespace Movetron
 		static public void InitScreen()
 		{
 			Console.Title = "Movetron v2.0";
-    		Console.SetWindowSize(80,40);  //[0..79], [0..39]
-    		Console.SetBufferSize(80,40);  //[0..79], [0..39]
-    		Console.CursorVisible = false;	
+			Console.SetWindowSize(80,40);	//[0..79], [0..39]
+			Console.SetBufferSize(80,40);	//[0..79], [0..39]
+			Console.CursorVisible = false;	
 		}
 		
 		//Показ юридической фигни
@@ -54,7 +54,7 @@ namespace Movetron
 						return;
 					}
 				}
-			}
+			}	// of while (true)
 		}	//of LangSelect()		
 	}	//of class InitBox
 	
@@ -91,7 +91,7 @@ namespace Movetron
 			{"ENEMY SPOTTED","ВИЖУ ПРОТИВНИКА"},
 			{"YOU'RE SPOTTED","ТЕБЯ ЗАСЕКЛИ"}
 		};
-		static int CurPos = 34;				 //Позиция курсора в экранчике.		
+		static int CurPos = 34;		//Позиция курсора в экранчике.		
 					
 		//Рисует прогресс-бар
 		static private void DrawProgressBar(int x,int y, int p)
@@ -107,20 +107,19 @@ namespace Movetron
 			//Вывод
 			for (i=0;i<p;i++)
 				CRT.Print(x+i,y,Fullbar[i].ToString());
-			
 		}
 		
 		//Показать, сколько осталось бомб.
 		static public void ShowBombs(int Bombs)
 		{
 			DrawProgressBar(31,38,Bombs);
-        }
+		}
 		
 		//Показать, сколько осталось патронов.
 		static public void ShowAmmo(int Ammo)
 		{
 			DrawProgressBar(47,38,Ammo);
-        }
+		}
 		
 		//Показать, сколько собрано камней.
 		static public void ShowGems(int Gems)
@@ -203,7 +202,8 @@ namespace Movetron
 			}
 			CRT.TextColor(11);
 			CRT.Print(58,CurPos,FeedMsgs[MsgNum,(byte)InitBox.Language]);
-			if (CurPos < 37) CurPos++;
+			if (CurPos < 37) 
+				CurPos++;
 			
 		}
 		
@@ -385,18 +385,18 @@ namespace Movetron
 					if (FirstTime == true)
 						CRT.Print(x,y + i,ChCharStr(Logo[i],LogoChars[j],'1'));
 					else 				
-        				CRT.Print(x,y + i,ChCharStr(Logo[i],'▓','1'));
+						CRT.Print(x,y + i,ChCharStr(Logo[i],'▓','1'));
 				CRT.TextColor(3);
-        		for (i=8;i < 13;i++)
-        			if (FirstTime == true)
+				for (i=8;i < 13;i++)
+					if (FirstTime == true)
 						CRT.Print(x,y + i,ChCharStr(Logo[i],LogoChars[j],'1'));
 					else 				
-        				CRT.Print(x,y + i,ChCharStr(Logo[i],'▓','1'));
-        		Thread.Sleep(200*Convert.ToInt32(FirstTime));
+						CRT.Print(x,y + i,ChCharStr(Logo[i],'▓','1'));
+				Thread.Sleep(200*Convert.ToInt32(FirstTime));
 			}
 			Thread.Sleep(300*Convert.ToInt32(FirstTime));
 			CRT.TextColor(12);
-        	CRT.Print(x,y+00,"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^▌▄ ▌▄ ▌▄ ▌▄ ▌▄ ▌▄ ▌▄  ");
+			CRT.Print(x,y+00,"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^▌▄ ▌▄ ▌▄ ▌▄ ▌▄ ▌▄ ▌▄  ");
 			CRT.Print(x,y+14,"▌▄ ▌▄ ▌▄ ▌▄ ▌▄ ▌▄ ▌▄ ▌▄ ▌▄ ▌▄ ▌▄ ▌▄^^^^^^^^^^^^^^^^^^^^^^^^^  ");
 			Thread.Sleep(500*Convert.ToInt32(FirstTime));		
 			
@@ -511,5 +511,4 @@ namespace Movetron
 								
 		}	//of Run()
 	}	// of class GameMenu
-			
 } // of namespace Movetron
