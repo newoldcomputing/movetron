@@ -7,10 +7,11 @@ namespace Movetron
 	//Основной класс
 	class MovetronGame
 	{			
+		THero Hero;	
 		
 		//Сообщения
 	 	public const byte MSG_DEAD = 0;
-    	public const byte MSG_WELCOME = 1;
+	 	public const byte MSG_WELCOME = 1;
 		public const byte MSG_GEMFOUND = 2;
 		public const byte MSG_COMPLETE = 3;
 		public const byte MSG_PAUSE = 17;
@@ -131,8 +132,6 @@ namespace Movetron
 			}
 		}
 		
-		THero Hero;				
-		
 		void ParseMazeArray(byte [,] Map)
 		{
 			int i, j;
@@ -144,6 +143,8 @@ namespace Movetron
 						Hero = new THero(i,j);
 				}
 		}
+		
+		
 		//#################################################################################################
 		static void Main()
     	{   	
