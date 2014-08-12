@@ -113,53 +113,68 @@ namespace Movetron
 		}
 	}
 
-	//Парсит карту, создает объекты
-	class TMapParser
-	{
-		byte [,] Map;
-		public void CreateHero(int x, int y)
-		{
-			MovetronGame.Hero = new THero(x,y);
-		}
-		
-		/*public void Run(byte [,] Map)
-		{
-			int i, j;
-			for (i=0;i<= Geo.MAXX;i++)
-				for (j=0;j<= Geo.MAXY;j++)
-				{
-					//Создать протагониста
-					if (Map[i,j] == Geo.L_START)
-						Hero = new THero(i,j);
-				}	
-		}*/
-		public TMapParser(byte [,] Map)
-		{
-			this.Map = Map;
-		}
-	}
 	//Основной класс
 	class MovetronGame
 	{			
-		
 		//Сообщения
 	 	public const byte MSG_DEAD = 0;
-    	public const byte MSG_WELCOME = 1;
+	 	public const byte MSG_WELCOME = 1;
 		public const byte MSG_GEMFOUND = 2;
 		public const byte MSG_COMPLETE = 3;
 		public const byte MSG_PAUSE = 17;
 				
+		//Прочитано из массива карты
+		public struct TMapParsedData
+		{
+			public int HeroStartX; 
+			public int HeroStartY;
+			public int [] EnemyX; 
+			public int [] EnemyY;
+			public int GemsLeft;						
+		}
+		
 		static uint time = 0;
 		static public int LevelNumber = 1; 
 		
-		public TMapParser MapParser;
-		public THero Hero;
+		static public TMapParsedData MapParsedData; //Прочитано из массива
+		static public int GemsLeft;					//Осталось камней
 		
+		//Парсит массив карты
+		static TMapParsedData ParseMap(byte [,] Map)
+		{
+			int i,j;
+			int EnemyCounter = 0;
+			TMapParsedData Buffer = new TMapParsedData();
+			
+			Buffer.EnemyX = new int[Geo.MAX_ENEMIES];
+			Buffer.EnemyY = new int[Geo.MAX_ENEMIES];
+			Buffer.GemsLeft = 0;
+			
+			for (i=0;i<=Geo.MAXX;i++)
+				for (j=0;j<Geo.MAXY;j++)
+				{
+					if (Geo.Map[i,j] == Geo.C_START)
+					{
+						Buffer.HeroStartX = i;
+						Buffer.HeroStartY = j;
+					}
+					if (Geo.Map[i,j] == Geo.C_SPAWN)
+					{
+						Buffer.EnemyX[EnemyCounter] = i;
+						Buffer.EnemyY[EnemyCounter] = j;
+						EnemyCounter++;
+					}
+					if (Geo.Map[i,j] == Geo.C_GEM)
+					    Buffer.GemsLeft++;
+					    
+					    
+				}
+			
+			return Buffer;
+		}
 		//#################################################################################################
 		static void Main()
     	{   	
-    		int Gems;				//Осталось камней
-			
     		InitBox.InitScreen();  	//Инициализируем экран.
     		InitBox.LegalStuff(); 	//Юридическая фигня.    				 		    		
     		InitBox.LangSelect(); 	//Выбор языка.
@@ -169,21 +184,25 @@ namespace Movetron
         	
         	//Загрузка карты
         	Geo.LoadMap(Geo.Map,LevelNumber);
-        	TMapParser MapParser = new TMapParser(Geo.Map);
-        	MapParser.CreateHero(5,5);
+        	MapParsedData = ParseMap(Geo.Map);
+        	
+        	//Сколько камушков на карте
+        	GemsLeft = MapParsedData.GemsLeft;
+        	
+        	//Создание героя
+        	THero Hero = new THero(MapParsedData.HeroStartX,MapParsedData.HeroStartY);
+        	Hero.Draw(true);
         	
         	GamePanel.Draw();
         	GamePanel.ShowMazeNumber(LevelNumber);
-        	GamePanel.ShowGems(Gems);
-        	/*GamePanel.ShowBombs();
+        	GamePanel.ShowGems(GemsLeft);
+        	GamePanel.ShowBombs(Hero.Bombs);
         	GamePanel.ShowAmmo(Hero.Ammo);
-        	GamePanel.ShowLives(Hero.Lives,false);*/
+        	GamePanel.ShowLives(Hero.Lives,false);
         	
         	Geo.ShowMap(Geo.Map,true);
         	
-        	Hero.Draw(true);
         	
-    		
     		//ГЛАВНЫЙ ЦИКЛ
     		do
     		{	
@@ -240,6 +259,15 @@ namespace Movetron
     			Hero.SetDXDY(0,0);
     			Hero.Draw(true);
     			
+    			//Нашли камушек?
+    			if (Geo.Map[Hero.x,Hero.y] == Geo.C_GEM)
+    			{
+    				Geo.Map[Hero.x,Hero.y] = Geo.C_EMPTY;
+    				GemsLeft--;
+    				GamePanel.SendMsg(MSG_GEMFOUND);
+    				GamePanel.ShowGems(GemsLeft);
+    			}
+    			
     			//Простой таймер
     			if (time < 64000) time++;
     			else time = 0;
@@ -247,6 +275,6 @@ namespace Movetron
     			Thread.Sleep(200); 		//одинаковая скорость на всех компах
     		  
     		} while(true); //главного цикла  		
-    	}
+		}
 	}
 }
