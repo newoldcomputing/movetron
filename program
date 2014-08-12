@@ -10,7 +10,7 @@ namespace Movetron
 		
 		//Сообщения
 	 	public const byte MSG_DEAD = 0;
-    public const byte MSG_WELCOME = 1;
+    	public const byte MSG_WELCOME = 1;
 		public const byte MSG_GEMFOUND = 2;
 		public const byte MSG_COMPLETE = 3;
 		public const byte MSG_PAUSE = 17;
@@ -131,7 +131,7 @@ namespace Movetron
 			}
 		}
 		
-		THero Hero;				//Протагонист! (звучит, а?)
+		THero Hero;				
 		
 		void ParseMazeArray(byte [,] Map)
 		{
@@ -147,31 +147,30 @@ namespace Movetron
 		//#################################################################################################
 		static void Main()
     	{   	
-    	  int Gems = 0;			//Осталось камней
+    		int Gems = 0;			//Осталось камней
 			
-    		
-			  InitBox.InitScreen();  	//Инициализируем экран.
+    		InitBox.InitScreen();  	//Инициализируем экран.
     		InitBox.LegalStuff(); 	//Юридическая фигня.    				 		    		
     		InitBox.LangSelect(); 	//Выбор языка.
 			
     		GameMenu.Run();
-        Console.Clear();
+        	Console.Clear();
         	
-        //Загрузка карты
-        Geo.LoadMap(Map,LevelNumber);
-        ParseMazeArray(Map);
+        	//Загрузка карты
+        	Geo.LoadMap(Map,LevelNumber);
+        	ParseMazeArray(Map);
         	        	       	        	
-        GamePanel.Draw();
-        GamePanel.ShowMazeNumber(LevelNumber);
-        GamePanel.ShowGems(Gems);
-        GamePanel.ShowBombs(Hero.Bombs);
-        GamePanel.ShowAmmo(Hero.Ammo);
-        GamePanel.ShowLives(Hero.Lives,false);
+        	GamePanel.Draw();
+        	GamePanel.ShowMazeNumber(LevelNumber);
+        	GamePanel.ShowGems(Gems);
+        	GamePanel.ShowBombs(Hero.Bombs);
+        	GamePanel.ShowAmmo(Hero.Ammo);
+        	GamePanel.ShowLives(Hero.Lives,false);
         	
-        Geo.ShowMap(Map,true);
+        	Geo.ShowMap(Map,true);
         	
         	
-        Hero.Draw(true);
+        	Hero.Draw(true);
         	
     		
     		//ГЛАВНЫЙ ЦИКЛ
